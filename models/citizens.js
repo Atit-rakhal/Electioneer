@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const fs = require("fs");
 
 const citizenSchema = new mongoose.Schema({
   firstName: {
@@ -24,10 +25,12 @@ const citizenSchema = new mongoose.Schema({
   },
   lifestatus: {
     type: Boolean,
-    required : true,
+    required: true,
   },
 });
 
 const Citizen = mongoose.model("Citizen", citizenSchema);
+
+
 
 module.exports = Citizen;

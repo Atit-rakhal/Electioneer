@@ -24,5 +24,13 @@
     "nodemailer": "^6.9.3",
     "path": "^0.12.7",
     "uuid": "^9.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Atit-rakhal/Electioneer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Atit-rakhal/Electioneer/issues"
+  },
+  "homepage": "https://github.com/Atit-rakhal/Electioneer#readme"
 }
