@@ -5,19 +5,28 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 const { generateToken } = require("../utils/jwtUtil");
+<<<<<<< HEAD
 
 const { unlinkSyncc } = require("../utils/unlinksynccUtil");
 
+=======
+const { unlinkSyncc } = require("../utils/unlinksynccUtil");
+>>>>>>> fb4befe4b13632c3bec88b669385e20bba473e9b
 app.use(bodyParser.urlencoded({ extended: true }));
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const { sendPasswordResetEmail } = require("../utils/nodemailerUtils");
 const VerificationOTP = require("../models/VerificationOTP");
+const faceapi = require("face-api.js");
+const Jimp = require("jimp");
 
 // Signup controller
 
+<<<<<<< HEAD
 const { sendOTP } = require("../utils/otpUtil");
+=======
+>>>>>>> fb4befe4b13632c3bec88b669385e20bba473e9b
 exports.signup = async (req, res) => {
   try {
     const {
@@ -91,8 +100,46 @@ exports.signup = async (req, res) => {
       photo: req.file.filename,
     });
 
-    // Save the user to the database
-    const savedUser = await newUser.save();
+    const uploadedFileName = req.file.originalname;
+    console.log(uploadedFileName);
+    console.log("befor model loading");
+    const faceModelsPath = path.join(__dirname, "..", "facemodels");
+    console.log(faceModelsPath);
+    const ssdMobilenetv1 = new faceapi.SsdMobilenetv1();
+    ssdMobilenetv1.input = req.file.filename;
+    console.log("after face models loading ");
+    // faceapi.nets.faceLandmark68Net.loadFromDisk("/facemodels");
+    // faceapi.nets.faceRecognitionNet.loadFromDisk("/facemodels");
+    // Detect faces in the uploaded photo
+    const image = await Jimp.read(req.file.path);
+
+    // Resize the image if needed (optional)
+    image.resize(800, Jimp.AUTO);
+
+    // Convert the image to a buffer
+    const imageBuffer = await image.getBufferAsync(Jimp.MIME_JPEG);
+
+    // Now, you can use imageBuffer as the input to the model
+    const detections = await faceapi
+      .detectAllFaces(imageBuffer)
+      .withFaceLandmarks()
+      .withFaceDescriptors();
+
+    console.log("after detections");
+    // Extract the facial features of the detected faces
+    const facialFeatures = await Promise.all(
+      detections.map(async (detection) => {
+        const landmarks = detection.landmarks;
+        const faceDescriptor = detection.descriptor;
+
+        // Return the facial features as an array
+        return [landmarks, faceDescriptor];
+      })
+    );
+
+    // Save the extracted facial features to the database
+    newUser.facialFeatures = facialFeatures;
+    await newUser.save();
 
     // Generate the verification OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
@@ -100,7 +147,7 @@ exports.signup = async (req, res) => {
 
     // Save the verification OTP to the database
     const verificationOTP = new VerificationOTP({
-      userId: savedUser._id,
+      userId: newUser._id,
       otp,
       otpExpiry,
     });
@@ -111,16 +158,27 @@ exports.signup = async (req, res) => {
     const userId = savedUser._id;
 
     // Payload for the JWT token
+<<<<<<< HEAD
     // const tokenPayload = {
     //   userId: savedUser._id,
     // email: savedUser.email,
     // };
+=======
+    const tokenPayload = {
+      userId: newUser._id,
+      email: newUser.email,
+    };
+>>>>>>> fb4befe4b13632c3bec88b669385e20bba473e9b
 
     // Generate the JWT token
     // const token = generateToken(tokenPayload);
 
     // Return the saved user object and token as the response
+<<<<<<< HEAD
     return res.status(201).json({ userId });
+=======
+    return res.status(201).json({ savedUser: newUser, token });
+>>>>>>> fb4befe4b13632c3bec88b669385e20bba473e9b
   } catch (error) {
     console.error(error); // Log the error for troubleshooting purposes
     if (req.file) {

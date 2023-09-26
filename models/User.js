@@ -37,10 +37,17 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+<<<<<<< HEAD
 
   district: {
+=======
+  userAddress: {
+>>>>>>> fb4befe4b13632c3bec88b669385e20bba473e9b
     type: String,
     required: true,
+  },
+  facialFeatures: {
+    type: [String], // You can adjust the type to store face data as needed
   },
 });
 
